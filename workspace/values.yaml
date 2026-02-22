@@ -13,4 +13,4 @@ minio:
   pass: minio123
   host: minio.minio.svc.cluster.local:9000
   bucket: user1
-  route_prefix: "https://minio-s3-minio"
+  route_prefix: minio-s3-minio
