@@ -128,7 +128,7 @@ spec:
         secretKey: AWS_SECRET_ACCESS_KEY
         secretName: aws-connection-shared-minio---pipelines
       scheme: https
-      secure: true
+      #secure: true
   persistenceAgent:
     deploy: true
     numWorkers: 2
