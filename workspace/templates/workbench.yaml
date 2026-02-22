@@ -85,7 +85,7 @@ stringData:
   AWS_ACCESS_KEY_ID: {{.Values.minio.user}} 
   AWS_SECRET_ACCESS_KEY: {{.Values.minio.pass}} 
   AWS_DEFAULT_REGION: us
-  AWS_S3_ENDPOINT: {{.Values.minio.host}} 
+  AWS_S3_ENDPOINT: {{ .Values.minio.route_prefix }}.{{ .Values.subdomain }}
   AWS_S3_BUCKET: {{.Values.username}}
 ---
 apiVersion: datasciencepipelinesapplications.opendatahub.io/v1
