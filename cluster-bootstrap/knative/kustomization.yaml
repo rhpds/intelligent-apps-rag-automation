@@ -8,3 +8,5 @@ resources:
 - knative-kafka.yaml
 - rbac.yaml
 - knative-service.yaml
+- deployment-minio-event-bridge.yaml
+- service-minio-event-bridge.yaml
