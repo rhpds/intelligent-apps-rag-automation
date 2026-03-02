@@ -11,7 +11,7 @@ metadata:
     opendatahub.io/notebook-image-url: >-
       https://github.com/rh-aiservices-bu/parasol-insurance/tree/main/bootstrap/workbench-image
     opendatahub.io/recommended-accelerators: "[]"
-    argocd.argoproj.io/sync-wave: "1"
+    argocd.argoproj.io/sync-wave: "-1"
   name: ic-workbench
   namespace: redhat-ods-applications
   labels:
