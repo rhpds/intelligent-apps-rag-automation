@@ -6,3 +6,5 @@ resources:
 - config.yaml
 - networkpolicy.yaml
 - knative-kafka.yaml
+- rbac.yaml
+- knative-service.yaml
