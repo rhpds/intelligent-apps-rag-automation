@@ -42,3 +42,38 @@ spec:
       # If you want to be explicit that it's for TCP (which HTTP is):
     ports:
     - protocol: TCP # This allows all TCP ports. Remove protocol to allow all TCP and UDP.
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-minio-to-event-bridge
+  namespace: rag-pipeline-workshop
+  labels:
+    app.kubernetes.io/instance: minio-event-bridge
+spec:
+  podSelector:
+    matchLabels:
+      app: minio-event-bridge
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: minio
+    ports:
+    - protocol: TCP
+      port: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: debug-allow-all-ingress-to-kfp-s3-trigger
+  namespace: rag-pipeline-workshop
+spec:
+  podSelector:
+    matchLabels:
+      serving.knative.dev/service: kfp-s3-trigger # Selects your kfp-s3-trigger pods
+  ingress:
+  - {} # An empty ingress rule allows ALL traffic from ALL sources to ALL ports
+  policyTypes:
+  - Ingress
