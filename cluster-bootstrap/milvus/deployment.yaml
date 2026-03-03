@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: vectordb-etcd
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
   labels:
     app.kubernetes.io/name: etcd
     app.kubernetes.io/instance: vectordb
@@ -48,6 +50,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: vectordb-milvus-standalone
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
   labels:
     app.kubernetes.io/name: milvus
     app.kubernetes.io/instance: vectordb

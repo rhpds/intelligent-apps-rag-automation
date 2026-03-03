@@ -2,6 +2,8 @@ apiVersion: v1
 kind: Service
 metadata:
   name: vectordb-milvus
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
   labels:
     app.kubernetes.io/name: milvus
     app.kubernetes.io/instance: vectordb
@@ -28,6 +30,8 @@ apiVersion: v1
 kind: Service
 metadata:
   name: vectordb-etcd-headless
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
   labels:
     app.kubernetes.io/name: etcd
     app.kubernetes.io/instance: vectordb
