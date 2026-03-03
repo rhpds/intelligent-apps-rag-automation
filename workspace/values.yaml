@@ -6,6 +6,8 @@ username: user1
 
 workbench: my-workbench
 
+repo: https://github.com/blues-man/hello-chris-rag-pipeline.git
+
 subdomain: apps.cluster-guid.sandbox.opentlc.com
 
 minio:
