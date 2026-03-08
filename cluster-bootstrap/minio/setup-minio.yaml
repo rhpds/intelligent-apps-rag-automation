@@ -48,28 +48,50 @@ spec:
             done
             echo "MinIO service is ready. Alias 'temp_minio' configured."
             
-            # 2. Create the target bucket for PDF uploads if it doesn't exist.
-            echo "Checking/Creating S3 bucket '${TARGET_BUCKET_NAME}'..."
+            # 2. Create the default instructor demo bucket for PDF uploads if it doesn't exist.
+            echo "Checking/Creating instructor demo bucket '${TARGET_BUCKET_NAME}'..."
             mc --config-dir ${MC_CONFIG_DIR} mb temp_minio/${TARGET_BUCKET_NAME} --ignore-existing
             echo "Bucket '${TARGET_BUCKET_NAME}' is present."
-            
+
             # 3. Create the 'pipelines' bucket for KFP artifacts if it doesn't exist.
             echo "Checking/Creating S3 bucket 'pipelines'..."
             mc --config-dir ${MC_CONFIG_DIR} mb temp_minio/pipelines --ignore-existing
             echo "Bucket 'pipelines' is present."
 
-            # 4. Construct the ARN for the server-configured Webhook target and add the event rule.
+            # 4. Construct the ARN for the server-configured Webhook target.
             TARGET_ARN="arn:minio:sqs::${WEBHOOK_TARGET_ID_IN_MINIO}:webhook"
-            echo "Adding/Updating event notification for Webhook target..."
             echo "Target ARN: ${TARGET_ARN}"
-            mc --config-dir ${MC_CONFIG_DIR} event add temp_minio/${TARGET_BUCKET_NAME} "${TARGET_ARN}" --event "put" --suffix ".pdf" --ignore-existing
 
-            echo "Event notification rule for Webhook target added/updated."
-            
-            # 5. Verify and list the configured events.
-            echo "Verifying event rules for bucket '${TARGET_BUCKET_NAME}':"
+            # 5. Add webhook event notification for the instructor demo bucket.
+            echo "Adding/Updating event notification for instructor demo bucket '${TARGET_BUCKET_NAME}'..."
+            mc --config-dir ${MC_CONFIG_DIR} event add temp_minio/${TARGET_BUCKET_NAME} "${TARGET_ARN}" --event "put" --suffix ".pdf" --ignore-existing
+            echo "Event notification rule added for '${TARGET_BUCKET_NAME}'."
+
+            # 6. Create per-user PDF inbox buckets with webhook notifications.
+            echo "Creating per-user buckets for ${USER_COUNT} users (prefix: '${USER_PREFIX}')..."
+            i=1
+            while [ "$i" -le "${USER_COUNT}" ]; do
+              USER_BUCKET="${USER_PREFIX}${i}-pdf-inbox"
+              echo "  Creating bucket '${USER_BUCKET}'..."
+              mc --config-dir ${MC_CONFIG_DIR} mb temp_minio/${USER_BUCKET} --ignore-existing
+              echo "  Adding event notification for '${USER_BUCKET}'..."
+              mc --config-dir ${MC_CONFIG_DIR} event add temp_minio/${USER_BUCKET} "${TARGET_ARN}" --event "put" --suffix ".pdf" --ignore-existing
+              echo "  Bucket '${USER_BUCKET}' configured."
+              i=$((i + 1))
+            done
+            echo "All per-user buckets created."
+
+            # 7. Verify and list the configured events.
+            echo "Verifying event rules for instructor demo bucket '${TARGET_BUCKET_NAME}':"
             mc --config-dir ${MC_CONFIG_DIR} event list temp_minio/${TARGET_BUCKET_NAME}
-            
+            i=1
+            while [ "$i" -le "${USER_COUNT}" ]; do
+              USER_BUCKET="${USER_PREFIX}${i}-pdf-inbox"
+              echo "Verifying event rules for '${USER_BUCKET}':"
+              mc --config-dir ${MC_CONFIG_DIR} event list temp_minio/${USER_BUCKET}
+              i=$((i + 1))
+            done
+
             echo "--- MinIO Setup Job Completed Successfully ---"
         env:
           # The internal service host for the MinIO deployment.
@@ -84,6 +106,12 @@ spec:
           # This ID must match the suffix used for MINIO_NOTIFY_WEBHOOK_* env vars in minio/deployment.yaml
           - name: WEBHOOK_TARGET_ID_IN_MINIO
             value: "RAG"
+          # Number of per-user PDF inbox buckets to create (should match user.count in bootstrap/values.yaml)
+          - name: USER_COUNT
+            value: "2"
+          # Prefix for user bucket names (should match user.prefix in bootstrap/values.yaml)
+          - name: USER_PREFIX
+            value: "user"
           # Securely pull credentials from the Kubernetes Secret.
           - name: MINIO_ACCESS_KEY
             valueFrom:
