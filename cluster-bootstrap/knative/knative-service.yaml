@@ -42,9 +42,10 @@ spec:
               protocol: TCP
           env:
             - name: KFP_ENDPOINT
-              # Default/fallback KFP endpoint for instructor demo (shared pdf-inbox bucket).
-              # Per-user buckets (e.g., user1-pdf-inbox) are routed dynamically by the app.
-              value: "https://ds-pipeline-dspa.user1.svc.cluster.local:8443"
+              # Fallback KFP endpoint used ONLY for the shared instructor "pdf-inbox" bucket.
+              # Per-user buckets are routed dynamically via KFP_DSPA_PATTERN below.
+              # TODO: Remove when service moves to per-user namespaces (use .Values.username).
+              value: ""
             - name: KFP_PIPELINE_NAME
               value: "simple-pdf-processing-pipeline"
             - name: KFP_EXPERIMENT_NAME
