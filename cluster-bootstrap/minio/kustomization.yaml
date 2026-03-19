@@ -11,3 +11,5 @@ resources:
   - route.yaml
   - network-policies.yaml
   - setup-minio.yaml
+  - restart-minio.yaml
+  - image-prepull.yaml
