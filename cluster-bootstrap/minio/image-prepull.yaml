@@ -1,0 +1,51 @@
+# DaemonSet to pre-pull the large docling pipeline image (~10.5 GB) onto every
+# worker node.  This runs as an init container that exits immediately after the
+# image is pulled, keeping the pod in a minimal "Running" state with a pause
+# container so the DaemonSet controller stays satisfied.
+#
+# Sync wave 3 — runs early alongside MinIO so the image is cached well before
+# any pipeline run needs it.
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: prepull-docling-pipeline
+  namespace: minio
+  labels:
+    app: prepull-docling-pipeline
+    app.kubernetes.io/instance: cluster-bootstrap
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  selector:
+    matchLabels:
+      app: prepull-docling-pipeline
+  template:
+    metadata:
+      labels:
+        app: prepull-docling-pipeline
+    spec:
+      # Tolerate all taints so the image is pulled on control-plane and worker nodes
+      tolerations:
+        - operator: Exists
+      initContainers:
+        - name: pull-docling
+          image: quay.io/cnuland/docling-pipeline:latest
+          command: ["echo", "Image pulled successfully"]
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "32Mi"
+            limits:
+              cpu: "100m"
+              memory: "64Mi"
+      containers:
+        - name: pause
+          image: registry.access.redhat.com/ubi9-micro:latest
+          command: ["sleep", "infinity"]
+          resources:
+            requests:
+              cpu: "1m"
+              memory: "8Mi"
+            limits:
+              cpu: "10m"
+              memory: "16Mi"
