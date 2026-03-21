@@ -1,0 +1,234 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: images-puller
+  namespace: rhods-notebooks
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+  labels:
+    app: images-puller
+spec:
+  selector:
+    matchLabels:
+      app: images-puller
+  template:
+    metadata:
+      labels:
+        app: images-puller
+    spec:
+      initContainers:
+        # Workbench image
+        - name: ic-workbench
+          image: image-registry.openshift-image-registry.svc:5000/redhat-ods-applications/ic-workbench:1.2
+          command: ["sleep", "1"]
+          resources:
+            limits:
+              memory: "20Mi"
+              cpu: "10m"
+        # Code Server
+        - name: codeserver
+          image: quay.io/modh/codeserver@sha256:4b6b563e75f9e642bac9f21c4a2d8d72d77923fc391dd5dc985d4489c7258ef5
+          command: ["sleep", "1"]
+          resources:
+            limits:
+              memory: "20Mi"
+              cpu: "10m"
+        # Auth proxy (updated from ose-oauth-proxy to odh-kube-auth-proxy-rhel9)
+        - name: odh-kube-auth-proxy
+          image: registry.redhat.io/rhoai/odh-kube-auth-proxy-rhel9@sha256:1f4b2b9bb5061faf17299c2ae2405ab408e2b7ce349d9831eb6045990e6da005
+          command: ["sleep", "1"]
+          resources:
+            limits:
+              memory: "20Mi"
+              cpu: "10m"
+        # OpenVINO Model Server
+        - name: openvino-model-server
+          image: quay.io/modh/openvino_model_server@sha256:9086c1ba1ba30d358194c534f0563923aab02d03954e43e9f3647136b44a5daf
+          command: ["sleep", "1"]
+          resources:
+            limits:
+              memory: "20Mi"
+              cpu: "10m"
+        # ModelMesh Runtime Adapter
+        - name: modelmesh-runtime-adapter
+          image: registry.redhat.io/rhoai/odh-modelmesh-runtime-adapter-rhel8@sha256:7d085942e4da73c2ff4885c62f10b904dc70fd08e819e62f925eb1b4ddfa1554
+          command: ["sleep", "1"]
+          resources:
+            limits:
+              memory: "20Mi"
+              cpu: "10m"
+        # ModelMesh
+        - name: modelmesh
+          image: registry.redhat.io/rhoai/odh-modelmesh-rhel8@sha256:bf25fce160dd7b8cce11e68a501006e4fa81a7858645038cdefdbba03df7ecdb
+          command: ["sleep", "1"]
+          resources:
+            limits:
+              memory: "20Mi"
+              cpu: "10m"
+        # MariaDB (updated from rhel8/mariadb-103 to rhel9/mariadb-105)
+        - name: mariadb
+          image: registry.redhat.io/rhel9/mariadb-105@sha256:b3097a8428b144e890b3b4802cff943db4e911a82c770cfb73c276aed74e4be4
+          command: ["sleep", "1"]
+          resources:
+            limits:
+              memory: "20Mi"
+              cpu: "10m"
+        # ML Pipelines Scheduled Workflow (updated to rhel9)
+        - name: ml-pipelines-scheduledworkflow
+          image: registry.redhat.io/rhoai/odh-ml-pipelines-scheduledworkflow-v2-rhel9@sha256:e3a4196c70c55c432e62362c13219a2173d1f52d0b533a121dcba37e4cfc3956
+          command: ["sleep", "1"]
+          resources:
+            limits:
+              memory: "20Mi"
+              cpu: "10m"
+        # ML Pipelines API Server (updated to rhel9)
+        - name: ml-pipelines-api-server
+          image: registry.redhat.io/rhoai/odh-ml-pipelines-api-server-v2-rhel9@sha256:aa390e3cf653c37cb6ef32b193e14212fd786872998706aa56b4fb8ebdac2f60
+          command: ["sleep", "1"]
+          resources:
+            limits:
+              memory: "20Mi"
+              cpu: "10m"
+        # ML Pipelines Persistence Agent (updated to rhel9)
+        - name: ml-pipelines-persistenceagent
+          image: registry.redhat.io/rhoai/odh-ml-pipelines-persistenceagent-v2-rhel9@sha256:7151a97c4b7c342d5f56b1a6ce7eda8ef3122a636ab97929ff72f2f344665f11
+          command: ["sleep", "1"]
+          resources:
+            limits:
+              memory: "20Mi"
+              cpu: "10m"
+        # Insurance Claim Pipeline
+        - name: insurance-claim-pipeline
+          image: quay.io/rh-aiservices-bu/rhoai-lab-insurance-claim-confidence-pipeline:1.2
+          command: ["sleep", "1"]
+          resources:
+            limits:
+              memory: "20Mi"
+              cpu: "10m"
+        # Insurance Claim App
+        - name: insurance-claim-app
+          image: quay.io/rh-aiservices-bu/rhoai-lab-insurance-claim-app:2.1.2
+          command: ["sleep", "1"]
+          resources:
+            limits:
+              memory: "20Mi"
+              cpu: "10m"
+        # Milvus Vector DB
+        - name: milvus
+          image: quay.io/rh-data-services/milvus-openshift:v2.3.10
+          command: ["sleep", "1"]
+          resources:
+            limits:
+              memory: "20Mi"
+              cpu: "10m"
+        # Milvus etcd
+        - name: milvus-etcd
+          image: docker.io/milvusdb/etcd:3.5.5-r4
+          command: ["sleep", "1"]
+          resources:
+            limits:
+              memory: "20Mi"
+              cpu: "10m"
+        # MinIO
+        - name: minio
+          image: quay.io/minio/minio:RELEASE.2023-06-19T19-52-50Z
+          command: ["sleep", "1"]
+          resources:
+            limits:
+              memory: "20Mi"
+              cpu: "10m"
+        # RAG Pipeline Event Trigger
+        - name: rag-pipeline-event
+          image: quay.io/cnuland/hello-chris-rag-pipeline-event@sha256:a9ef4e120756385c84379bad8c38ae77dba844b4f8661ca386e52a61448aac34
+          command: ["sleep", "1"]
+          resources:
+            limits:
+              memory: "20Mi"
+              cpu: "10m"
+        # RAG Pipeline MinIO Event Converter
+        - name: rag-pipeline-converter
+          image: quay.io/cnuland/hello-chris-rag-pipeline-converter:latest
+          command: ["sleep", "1"]
+          resources:
+            limits:
+              memory: "20Mi"
+              cpu: "10m"
+        # Showroom AI Assistant
+        - name: showroom-ai-assistant
+          image: quay.io/bluesman/showroom-ai-assistant:latest
+          command: ["sleep", "1"]
+          resources:
+            limits:
+              memory: "20Mi"
+              cpu: "10m"
+        # LlamaStack
+        - name: llamastack
+          image: docker.io/llamastack/distribution-starter:0.3.2
+          command: ["sleep", "1"]
+          resources:
+            limits:
+              memory: "20Mi"
+              cpu: "10m"
+        # Node.js (MCP Server)
+        - name: node-mcp-server
+          image: docker.io/node:20
+          command: ["sleep", "1"]
+          resources:
+            limits:
+              memory: "20Mi"
+              cpu: "10m"
+        # Service Mesh Proxy (metadata envoy)
+        - name: proxyv2
+          image: registry.redhat.io/openshift-service-mesh/proxyv2-rhel9@sha256:7ef494feff5e4ed3d966e487434597f3c0ef344a87b474199b042eb1657a8e91
+          command: ["sleep", "1"]
+          resources:
+            limits:
+              memory: "20Mi"
+              cpu: "10m"
+        # ML Metadata gRPC Server
+        - name: mlmd-grpc-server
+          image: registry.redhat.io/rhoai/odh-mlmd-grpc-server-rhel9@sha256:8ad51f0a75489e9396bb7794cbbd4352e598a030e56faebd25863e4cb8688ebf
+          command: ["sleep", "1"]
+          resources:
+            limits:
+              memory: "20Mi"
+              cpu: "10m"
+        # Argo Workflow Controller
+        - name: argo-workflow-controller
+          image: registry.redhat.io/rhoai/odh-data-science-pipelines-argo-workflowcontroller-rhel9@sha256:793f244bb1369ce8fab4ea975a0aa3d6996313c3f6d291d361b7d5ea53244ba6
+          command: ["sleep", "1"]
+          resources:
+            limits:
+              memory: "20Mi"
+              cpu: "10m"
+        # AMQ Streams / Strimzi Operator
+        - name: strimzi-operator
+          image: registry.redhat.io/amq-streams/strimzi-rhel9-operator@sha256:b84373193b51460a80670e046e29b2cf70cd625770b41ff47dff32144800570d
+          command: ["sleep", "1"]
+          resources:
+            limits:
+              memory: "20Mi"
+              cpu: "10m"
+        # Knative Serving Queue Proxy
+        - name: kn-serving-queue
+          image: registry.redhat.io/openshift-serverless-1/kn-serving-queue-rhel9@sha256:7316b5cadfa518e05a22a11cf1ac23dad32f3b0b098b9a726f953c0e757bd9ca
+          command: ["sleep", "1"]
+          resources:
+            limits:
+              memory: "20Mi"
+              cpu: "10m"
+        # Docling Pipeline
+        - name: docling-pipeline
+          image: quay.io/cnuland/docling-pipeline:latest
+          command: ["sleep", "1"]
+          resources:
+            limits:
+              memory: "20Mi"
+              cpu: "10m"
+      containers:
+        - name: pause
+          image: registry.k8s.io/pause:3.9
+          resources:
+            limits:
+              memory: "20Mi"
+              cpu: "10m"
