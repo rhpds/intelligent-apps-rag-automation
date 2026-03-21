@@ -109,7 +109,7 @@ spec:
           # Number of per-user PDF inbox buckets to create (should match user.count in bootstrap/values.yaml)
           # Set high to cover any workshop size — empty buckets cost nothing.
           - name: USER_COUNT
-            value: "500"
+            value: "24"
           # Prefix for user bucket names (should match user.prefix in bootstrap/values.yaml)
           - name: USER_PREFIX
             value: "user"
